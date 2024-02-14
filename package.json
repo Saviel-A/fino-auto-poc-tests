@@ -1,0 +1,41 @@
+{
+  "name": "fino-auto-poc-test",
+  "description": "POC automation",
+  "version": "1.0.1",
+  "author": "Finonex Automation",
+  "repository": "git@gitlab.com:finonex-rnd/infra/fino-auto-poc.git",
+  "workspaces": [
+    "src"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.16.1"
+  },
+  "scripts": {
+    "start": "ts-node src/app.ts",
+    "test:stage": "cross-env NODE_ENV=test test_env= playwright test",
+    "test:production": "cross-env NODE_ENV=test test_env= playwright test",
+    "test:single-stage": "cross-env NODE_ENV=test test_env= playwright test",
+    "test:single-production": "cross-env NODE_ENV=test test_env= playwright test -g 'QaWidgetsDBService'",
+    "allure:generate": "allure generate --clean",
+    "allure:open": "allure open",
+    "allure:serve": "allure serve"
+  },
+  "dependencies": {
+    "@finonex-rnd/fino-logger": "1.0.8",
+    "@finonex-rnd/fino-providers": "1.4.3",
+    "@finonex-rnd/fino-tracing": "1.2.2",
+    "@playwright/test": "^1.41.1",
+    "@types/node": "^20.11.1",
+    "allure-commandline": "^2.26.0",
+    "allure-playwright": "^2.11.1",
+    "cross-env": "^7.0.3",
+    "playwright-reporter": "^1.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@slack/types": "^2.11.0",
+    "playwright-slack-report": "^1.1.60"
+  }
+}

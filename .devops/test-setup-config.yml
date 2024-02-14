@@ -1,0 +1,19 @@
+init:
+  commands:
+    - curl
+  bins:
+    path: init-bins
+    packages:
+      - mc
+      - kafka
+
+kafka:
+  topics:
+    - name: user.events
+      partitions: 1
+    - name: user.completed
+      partitions: 1
+
+minio:
+  buckets:
+    - users-history

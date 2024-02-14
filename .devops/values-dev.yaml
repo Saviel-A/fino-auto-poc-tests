@@ -1,0 +1,107 @@
+# Default values for node-boilerplate.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: registry.gitlab.com/finonex-rnd/finonex-microservice-boilerplate/boilerplate-worker
+  pullPolicy: IfNotPresent
+
+configmap:
+  app:
+    NODE_ENV: development
+    KAFKA_BROKER: "{{ .Values.providers.kafka.broker }}"
+    KAFKA_CONSUMER_GROUP_ID: "{{ .Values.providers.kafka.consumerGroupId }}"
+    KAFKA_EVENTS_TOPIC: "{{ .Values.providers.kafka.eventsTopic }}"
+    KAFKA_COMPLETED_TOPIC: "{{ .Values.providers.kafka.completedTopic }}"
+    KAFKA_CLIENT_ID: "{{ .Values.providers.kafka.clientId }}"
+    KAFKA_INITIAL_RETRY_TIME: "{{ .Values.providers.kafka.initialRetryTime }}"
+    KAFKA_RETRIES: "{{ .Values.providers.kafka.retries }}"
+    MINIO_HOST: "{{ .Values.providers.minio.host }}"
+    MINIO_BUCKET: "{{ .Values.providers.minio.bucket }}"
+    PROM_PUSHGATEWAY_ADDRESS: "http://prometheus-pushgateway.globalmon.svc.cluster.local:9091"
+
+secrets:
+  - envVar: MINIO_ACCESS_KEY
+    secret:
+      key: "access-key"
+    vault:
+      path: "Office_cluster_DEV/data/app-minio"
+      key: "access-key"
+  - envVar: MINIO_SECRET_KEY
+    secret:
+      key: "secret-key"
+    vault:
+      path: "Office_cluster_DEV/data/app-minio"
+      key: "secret-key"
+  - envVar: MINIO_ROOT_USER
+    secret:
+      key: "root-username"
+    vault:
+      path: "Office_cluster_DEV/data/app-minio"
+      key: "root-username"
+  - envVar: MINIO_ROOT_PASSWORD
+    secret:
+      key: "root-password"
+    vault:
+      path: "Office_cluster_DEV/data/app-minio"
+      key: "root-password"
+
+resources:
+  limits:
+    memory: 500Mi
+    cpu: 500m
+  requests:
+    memory: 10Mi
+    cpu: 10m
+
+## Configure extra options for liveness probe
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param livenessProbe.enabled Turn on and off liveness probe
+## @param livenessProbe.path Path of the HTTP service for checking the healthy state
+## @param livenessProbe.initialDelaySeconds Delay before liveness probe is initiated
+## @param livenessProbe.periodSeconds How often to perform the probe
+## @param livenessProbe.timeoutSeconds When the probe times out
+## @param livenessProbe.failureThreshold Minimum consecutive failures for the probe
+## @param livenessProbe.successThreshold Minimum consecutive successes for the probe
+##
+livenessProbe:
+  enabled: true
+  path: /liveness
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  path: /readiness
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+providers:
+  kafka:
+    broker: "kafka:9092"
+    consumerGroupId: workers.user
+    completedTopic: user.completed
+    clientId: user_service_client
+    initialRetryTime: 300
+    retries: 10
+  minio:
+    host: minio
+    bucket: user-history
+
+keda:
+  enabled: true
+  minReplicaCount: 2
+  maxReplicaCount: 100
+  triggers:
+    - type: kafka
+      metadata:
+        lagThreshold: "100"
+        topic: "{{ .Values.providers.kafka.eventsTopic }}"
+        consumerGroup: "{{ .Values.providers.kafka.consumerGroupId }}"
+        bootstrapServers: "{{ .Values.providers.kafka.broker }}"

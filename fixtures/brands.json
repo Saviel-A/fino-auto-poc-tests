@@ -1,0 +1,22 @@
+{
+  "fortrade": {
+    "stage": "https://stage.fortrade.com",
+    "production": "https://www.fortrade.com/"
+  },
+  "gcmasia": {
+    "stage": "https://stage.gcmasia.com",
+    "production": "https://www.gcmasia.co/"
+  },
+  "kapitalrs": {
+    "stage": "https://stage.kapitalrs.com/",
+    "production": "https://www.kapitalrs.com/"
+  },
+  "gcmyatirim": {
+    "stage": "https://stage.gcmyatirim.com.tr/?show=1/",
+    "production": "https://gcmyatirim.com.tr/"
+  },
+  "fortrade-pro": {
+    "stage": "https://readyst.fortrade.com/",
+    "production": "https://ready.fortrade.com/"
+  }
+}
